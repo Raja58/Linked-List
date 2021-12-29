@@ -1,44 +1,53 @@
 // <!--
 //  ============================
 //  @Author  :        raja_5
-//  @Version :        1.0
-//  @Date    :        09 Nov 2021
+//  @Version :        2.0
+//  @Date    :        29 Dec 2021
 //  @Detail  :        Reverse Nodes in k-Group (LeetCode)
 //  ============================
 //  -->
 
+
 class Solution {
 public:
-    ListNode* reverseKGroup(ListNode* head, int k) {
-        if(!head || k == 1)
+    
+    ListNode *reverse(ListNode *head)
+    {
+        if(!head || !head -> next)
             return head;
-        
-        ListNode *dummy = new ListNode(-1);
-        dummy -> next = head;
-        ListNode *pre , *cur, *nex;
-        pre = nex = dummy;
-        cur = head;
-        
-        int cnt = 0;
+        ListNode *prev = NULL, *cur = head;
         while(cur)
         {
-            cnt++;
-            cur = cur -> next;
+            ListNode *nex = cur -> next;
+            cur -> next = prev;
+            prev = cur;
+            cur = nex;
         }
-        
-        while(cnt >= k)
+        return prev;
+    }
+    
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if(k == 1 || !head || !head -> next)
+            return head;
+        ListNode *dummy = new ListNode(-1);
+        dummy -> next = head;
+        ListNode *pivot = dummy, *prev = dummy, *cur = head;
+        while(cur != NULL)
         {
-            cur = pre -> next;
-            nex = cur -> next;
-            for(int i = 1; i < k; i++)
+            for(int i = 0; i < k && prev != NULL; i++)
             {
-                cur -> next = nex -> next;
-                nex -> next = pre -> next;
-                pre -> next = nex;
-                nex = cur -> next;
+                prev = cur;
+                if(cur != NULL)
+                    cur = cur -> next;
             }
-            pre = cur;
-            cnt -= k;
+            if(prev == NULL)
+                return dummy -> next;
+            prev -> next = NULL;
+            ListNode *revHead = reverse(pivot -> next);
+            pivot -> next -> next = cur;
+            prev = pivot -> next;
+            pivot -> next = revHead;
+            pivot = prev;
         }
         return dummy -> next;
     }
